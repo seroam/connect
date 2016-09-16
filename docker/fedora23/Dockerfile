@@ -2,10 +2,8 @@ FROM fedora:23
 
 # RUN apt-get update
 RUN dnf install -y ruby glibc-devel gcc gcc-c++ make gmp-devel
-RUN dnf install -y ruby-devel rpm-build rpmdevtools redhat-rpm-config
+RUN dnf install -y ruby-devel rpm-build rpmdevtools
 RUN gem install fpm
-
-RUN dnf install -y python3-devel libffi-devel openssl-devel dbus-python
 
 RUN mkdir -p /src/connect
 WORKDIR /src
