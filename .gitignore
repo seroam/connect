@@ -5,3 +5,6 @@ venv/
 openhsr_connect.egg-info
 __pycache__/
 *.pyc
+
+# Building
+build/
