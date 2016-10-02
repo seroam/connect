@@ -1,0 +1,14 @@
+FROM ubuntu:xenial
+
+# Build time env variables 
+ARG ARCH
+ARG DOCKER_UID
+ARG DOCKER_GID
+
+# Provisioning script
+ADD build-docker-container.bash /opt/
+RUN /bin/bash /opt/build-docker-container.bash
+
+# Default container environment
+WORKDIR /build
+USER user
