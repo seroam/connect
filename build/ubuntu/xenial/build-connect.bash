@@ -6,9 +6,12 @@
 # - FPM_DEFAULTS_CONNECT: Default FPM build parameter for connect
 
 FPM_DEB="-t deb --python-easyinstall easy_install3"
+INSTALL_SCRIPT_PATH="/build/connect/build/ubuntu/xenial"
 
 if [[ $ARCH == "x86_64" ]]; then
   ${FPM_DEFAULTS}  ${FPM_DEB} ${FPM_DEFAULTS_CONNECT} \
+     --after-install ${INSTALL_SCRIPT_PATH}/connect-postinstall.sh \
+     --before-remove ${INSTALL_SCRIPT_PATH}/connect-preremove.sh \
     connect/setup.py
 fi
 

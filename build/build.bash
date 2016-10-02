@@ -59,8 +59,6 @@ export FPM_DEFAULTS="fpm -s python --package /build/bin/ \
 export FPM_DEFAULTS_CONNECT="${FPM_DEFAULTS_CONNECT:="-n openhsr-connect --license GPL \
 	-d python3 -d cups \
         -x Makefile -x build -x '.git*'"}"
-	#TODO^: Create symlink to cups with
-	# --after-install setup.sh --before-remove uninstall.sh
 
 # Prolog
 pushd "./${DIST}/${DIST_VERSION}/" >/dev/null
