@@ -6,7 +6,6 @@
 # - DOCKER_GID: GID of your desktop user
 
 apt-get update
-apt-get install dpkg-dev
 
 if [[ $ARCH == "x86_64" ]]; then
   # FPM
@@ -15,6 +14,9 @@ if [[ $ARCH == "x86_64" ]]; then
   
   # Python
   apt-get install -y python3 python3-pip python3-pkg-resources
+
+  # Aptly
+  apt-get install -y aptly dpkg-dev gnupg2
 fi
 
 if [[ $ARCH == "i386" ]]; then
@@ -24,5 +26,6 @@ fi
 # Add build user
 groupadd -g ${DOCKER_GID} user
 useradd --home /build -u ${DOCKER_UID} -g ${DOCKER_GID} -M user
-mkdir -p /build/connect /build/dist/${DIST}
+mkdir -p /build/connect /build/.gnupg /build/dist_all_ro/ /build/dist/${DIST}
+chmod 700 /build/.gnupg
 chown -R ${DOCKER_UID}:${DOCKER_GID} /build/

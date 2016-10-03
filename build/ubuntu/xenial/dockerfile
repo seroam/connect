@@ -8,6 +8,7 @@ ARG DOCKER_GID
 # Provisioning script
 ADD build-docker-container.bash /opt/
 RUN /bin/bash /opt/build-docker-container.bash
+ADD gpg.conf /build/.gnupg/gpg.conf
 
 # Default container environment
 WORKDIR /build

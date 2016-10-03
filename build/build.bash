@@ -43,12 +43,19 @@ esac
 # ENV
 ###############################################################################
 # relative root need to be resolved:
-export BUILDROOT=`readlink -f "${BUILDROOT:="../"}"`
-export BUILDDEST=`readlink -f "${BUILDDEST:="../dist"}"`
+export BUILDROOT=`readlink -f "${BUILDROOT:="../"}"` \
+  || (echo "Could not find BUILDROOT, please set it as env variable." >&2 && exit 2)
+export BUILDDEST=`readlink -f "${BUILDDEST:="../dist"}"` \
+  || (echo "Could not find BUILDDEST, please set it as env variable." >&2 && exit 3)
 
 # Building user IDs (it might be usfull to change this to your local user)
 export DOCKER_UID=${DOCKER_UID:=1000}
 export DOCKER_GID=${DOCKER_GID:=1000}
+
+# GPG-Keyfile for signing packages
+export PASSWORD_STORE_DIR=${PASS_REPOSITORY:=`readlink -f "${BUILDROOT}/../pass/"`} \
+  || (echo "Could not find PASS_REPOSITORY, please set it as env variable." >&2 && exit 2)
+export GPG_KEY="${GPG_KEY:=`pass show connect/signkey`}"
 
 # Distribution and packaging format
 export DIST="ubuntu" #TODO: This comes from outside in the future.
@@ -89,7 +96,9 @@ if [ $MODE == "connect" ] || [ $MODE == "all" ]; then
   CONNECT_BUILDDEST=${BUILDDEST}/${DIST}/${DIST_VERSION}/connect
   mkdir -p $CONNECT_BUILDDEST &&
     chown -R ${DOCKER_UID}:${DOCKER_GID} $BUILDDEST
-  rm ${CONNECT_BUILDDEST}/* #TODO: This is possibly dangerous.
+
+  # Remove old buildfiles
+  find ${CONNECT_BUILDDEST} -type f -exec rm -rf {} \;
 
   ${DOCKER_RUN} --name "openhsr-connect-${DIST}-${DIST_VERSION}-${ARCH}-connect" \
     --volume=${BUILDROOT}:/build/connect \
@@ -109,7 +118,6 @@ if [ $MODE == "requirements" ] || [ $MODE == "all" ]; then
   REQ_BUILDDEST=${BUILDDEST}/${DIST}/${DIST_VERSION}/requirements
   mkdir -p $REQ_BUILDDEST &&
     chown -R ${DOCKER_UID}:${DOCKER_GID} $BUILDDEST
-  rm -f ${REQ_BUILDDEST}/* #TODO: This could possibly be dangerous.
 
   ${DOCKER_RUN} --name "openhsr-connect-${DIST}-${DIST_VERSION}-${ARCH}-connect" \
     --volume=${BUILDROOT}:/build/connect \
@@ -129,15 +137,15 @@ if [ $MODE == "repository" ] || [ $MODE == "all" ]; then
   REP_BUILDDEST=${BUILDDEST}/${DIST}/${DIST_VERSION}/repository/ # TODO: Add arch to path
   mkdir -p $REP_BUILDDEST &&
     chown -R ${DOCKER_UID}:${DOCKER_GID} $BUILDDEST
-  rm -f ${REP_BUILDDEST}/* #TODO: This could possibly be dangerous.
 
-  # Copy all packages to repository
-  cp -a ${BUILDDEST}/${DIST}/${DIST_VERSION}/*/* ${REP_BUILDDEST} || (echo "Repository: No packages could be found." >&2 && exit 30) #TODO: This could possibly be dangerous
+  # Remove old buildfiles
+  find ${REP_BUILDDEST} -type f -exec rm -rf {} \;
 
   ${DOCKER_RUN} --name "openhsr-connect-${DIST}-${DIST_VERSION}-${ARCH}-connect" \
     --volume=${BUILDROOT}:/build/connect \
     --volume=${REP_BUILDDEST}:/build/dist \
-    --env ARCH \
+    --volume=${BUILDDEST}:/build/dist_all_ro:ro \
+    --env ARCH --env GPG_KEY \
     --env DOCKER_UID --env DOCKER_GID \
     openhsr/openhsr-connect-${DIST}-${DIST_VERSION}-${ARCH} \
     /build/connect/build/${DIST}/${DIST_VERSION}/build-repository.bash 
