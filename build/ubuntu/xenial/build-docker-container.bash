@@ -24,5 +24,5 @@ fi
 # Add build user
 groupadd -g ${DOCKER_GID} user
 useradd --home /build -u ${DOCKER_UID} -g ${DOCKER_GID} -M user
-mkdir -p /build/connect /build/bin/${DIST}
+mkdir -p /build/connect /build/dist/${DIST}
 chown -R ${DOCKER_UID}:${DOCKER_GID} /build/

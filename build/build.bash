@@ -44,7 +44,7 @@ esac
 ###############################################################################
 # relative root need to be resolved:
 export BUILDROOT=`readlink -f "${BUILDROOT:="../"}"`
-export BUILDDEST=`readlink -f "${BUILDDEST:="../bin"}"`
+export BUILDDEST=`readlink -f "${BUILDDEST:="../dist"}"`
 
 # Building user IDs (it might be usfull to change this to your local user)
 export DOCKER_UID=${DOCKER_UID:=1000}
@@ -53,7 +53,7 @@ export DOCKER_GID=${DOCKER_GID:=1000}
 # Distribution and packaging format
 export DIST="ubuntu" #TODO: This comes from outside in the future.
 export DOCKER_RUN="${DOCKER_RUN:="docker run --interactive --tty --rm"}"
-export FPM_DEFAULTS="fpm -s python --package /build/bin/ \
+export FPM_DEFAULTS="fpm -s python --package /build/dist/ \
       --python-bin python3 --python-package-name-prefix python3"
 
 export FPM_DEFAULTS_CONNECT="${FPM_DEFAULTS_CONNECT:="-n openhsr-connect --license GPL \
@@ -93,7 +93,7 @@ if [ $MODE == "connect" ] || [ $MODE == "all" ]; then
 
   ${DOCKER_RUN} --name "openhsr-connect-${DIST}-${DIST_VERSION}-${ARCH}-connect" \
     --volume=${BUILDROOT}:/build/connect \
-    --volume=${CONNECT_BUILDDEST}:/build/bin \
+    --volume=${CONNECT_BUILDDEST}:/build/dist \
     --env ARCH \
     --env DOCKER_UID --env DOCKER_GID \
     --env FPM_DEFAULTS --env FPM_DEFAULTS_CONNECT \
@@ -113,7 +113,7 @@ if [ $MODE == "requirements" ] || [ $MODE == "all" ]; then
 
   ${DOCKER_RUN} --name "openhsr-connect-${DIST}-${DIST_VERSION}-${ARCH}-connect" \
     --volume=${BUILDROOT}:/build/connect \
-    --volume=${REQ_BUILDDEST}:/build/bin \
+    --volume=${REQ_BUILDDEST}:/build/dist \
     --env ARCH \
     --env DOCKER_UID --env DOCKER_GID \
     --env FPM_DEFAULTS \
@@ -136,7 +136,7 @@ if [ $MODE == "repository" ] || [ $MODE == "all" ]; then
 
   ${DOCKER_RUN} --name "openhsr-connect-${DIST}-${DIST_VERSION}-${ARCH}-connect" \
     --volume=${BUILDROOT}:/build/connect \
-    --volume=${REP_BUILDDEST}:/build/bin \
+    --volume=${REP_BUILDDEST}:/build/dist \
     --env ARCH \
     --env DOCKER_UID --env DOCKER_GID \
     openhsr/openhsr-connect-${DIST}-${DIST_VERSION}-${ARCH} \

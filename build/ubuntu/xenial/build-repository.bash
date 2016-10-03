@@ -4,7 +4,7 @@
 # - ARCH: Build architecture
 
 # Prolog
-pushd /build/bin >/dev/null
+pushd /build/dist >/dev/null
 
 ###############################################################################
 # Create repository index
