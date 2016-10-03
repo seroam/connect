@@ -5,7 +5,7 @@ import logging
 
 from . import printing
 from .exceptions import PrintException
-from . import config
+from . import configuration
 
 logger = logging.getLogger('openhsr_connect.print')
 
@@ -32,11 +32,11 @@ def create_socket():
     while True:
         conn, addr = filesocket.accept()
         data = read_data(conn)
-
+        logger.debug('Recieving document...')
         try:
-            configuration = config.load_config(raise_if_incomplete=True)
-            password = config.get_password(configuration)
-            printing.send_to_printer(configuration, password, ata)
+            config = configuration.load_config(raise_if_incomplete=True)
+            password = configuration.get_password(config)
+            printing.send_to_printer(config, password, data)
         except PrintException as e:
             logger.error('Exception occured during send_to_printer: \n%s ' % e)
 
@@ -52,12 +52,8 @@ def read_data(conn):
     while True:
         bufsize = 1024
         temp = conn.recv(bufsize)
-        print(temp)
         binary += temp
         if (len(temp) < bufsize):
             break
 
     return json.loads(binary.decode('utf-8'))
-
-if __name__ == '__main__':
-    create_socket()

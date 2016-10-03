@@ -4,7 +4,7 @@ import socket
 import logging
 import json
 import fnmatch
-from . import config as connect_config
+from . import configuration
 from . import exceptions
 
 from smb.SMBConnection import SMBConnection
@@ -12,28 +12,35 @@ from smb.smb_structs import ProtocolError
 
 
 SMB_SERVER_NAME = 'c206.hsr.ch'
-SMB_SERVER_IP = socket.gethostbyname(SMB_SERVER_NAME)
 SMB_SHARE_NAME = 'skripte'
-SMB_CLIENT_NAME = socket.gethostname()
 SMB_DOMAIN = 'HSR'
 SMB_SERVER_PORT = 445
 
-logger = logging.getLogger('openhsr_connect.config')
+logger = logging.getLogger('openhsr_connect.sync')
 
 
-def smb_login(username):
-    password = connect_config.get_password(config)
+def smb_login(config):
+    username = config['login']['username']
+    password = configuration.get_password(config)
+    try:
+        server_ip = socket.gethostbyname(SMB_SERVER_NAME)
+    except OSError as e:
+        logger.debug("Exception when connecting to %s: %s" % (SMB_SERVER_NAME, e))
+        raise exceptions.ConnectException(
+            'Could not find %s, are you in the HSR network?' % SMB_SERVER_NAME)
+
+    client_name = socket.gethostname()
     connection = SMBConnection(
-        username, password, SMB_CLIENT_NAME,
+        username, password, client_name,
         SMB_SERVER_NAME, domain=SMB_DOMAIN, use_ntlm_v2=False)
     try:
-        connect_result = connection.connect(SMB_SERVER_IP, SMB_SERVER_PORT)
+        connect_result = connection.connect(server_ip, SMB_SERVER_PORT)
         if connect_result is False:
             raise ProtocolError("SMB Connection failure")
     except ProtocolError as e:
         logger.debug("Exception when connecting to %s: %s" % (SMB_SERVER_NAME, e))
         raise exceptions.ConnectException(
-            "Could not connect to %s, wrong password?" % SMB_SERVER_NAME)
+            "Connection to %s failed, wrong password?" % SMB_SERVER_NAME)
     logger.debug('SMB Connection to %s successful!' % SMB_SERVER_NAME)
     return connection
 
@@ -78,11 +85,11 @@ def handle_local_change(full_local_path, rel_remote_path, config):
         return 'keep'
     elif handling_config == 'ask':
         question = "Do you want to overwrite %s with the new version?"
-        if not ask_question(question % rel_remote_path):
+        if not ask_question(question % full_local_path):
             return 'keep'
-        logger.debug("File %s will be overwritten" % rel_remote_path)
+        logger.debug("File %s will be overwritten" % full_local_path)
     elif handling_config == 'overwrite':
-        logger.info("File %s will be overwritten" % rel_remote_path)
+        logger.info("File %s will be overwritten" % full_local_path)
     elif handling_config == 'makeCopy':
         rename_file(full_local_path)
 
@@ -98,7 +105,7 @@ def ask_question(question):
 
 
 def download_file(connection, remote, local):
-    logger.debug('Downloading file %s' % remote)
+    logger.info('Downloading file %s' % remote)
     with open(local, 'wb') as local_file:
         connection.retrieveFile(SMB_SHARE_NAME, remote, local_file)
         logger.debug('Downloading of file %s complete!' % remote)
@@ -118,10 +125,10 @@ def remove_tree(filepath):
     else:
         for subfile in os.listdir(filepath):
             remove_tree(os.path.join(filepath, subfile))
-        os.removedirs(filepath)
+        os.rmdir(filepath)
 
 
-def sync_tree(connection, source, destination, rel_path, excludes, cache, config):
+def sync_tree(connection, repo_name, source, destination, rel_path, excludes, cache, config):
     fileset = set(cache)
     remote_path = os.path.join(source, rel_path)
     for shared_file in connection.listPath(SMB_SHARE_NAME, remote_path):
@@ -132,7 +139,7 @@ def sync_tree(connection, source, destination, rel_path, excludes, cache, config
         if filename == '.' or filename == '..':
             continue
         elif exclude_file(rel_path, filename, excludes):
-            logger.debug('Skipping ignored file: %s' % relative_remote_path)
+            logger.debug('%s: Skipping ignored file: %s' % (repo_name, relative_remote_path))
             continue
         elif shared_file.isDirectory:
             if not os.path.exists(full_local_path):
@@ -142,7 +149,7 @@ def sync_tree(connection, source, destination, rel_path, excludes, cache, config
             if filename not in cache:
                 cache[filename] = {}
             sync_tree(
-                connection, source, destination,
+                connection, repo_name, source, destination,
                 os.path.join(rel_path, filename), excludes,
                 cache[filename], config)
         else:
@@ -150,12 +157,13 @@ def sync_tree(connection, source, destination, rel_path, excludes, cache, config
                                        shared_file.last_write_time)
             if os.path.exists(full_local_path) and filename in cache:
                 if remote_digest == cache[filename]:
-                    logger.debug('File %s has not changed' % relative_remote_path)
+                    logger.debug(
+                        '%s: File %s has not changed' % (repo_name, relative_remote_path))
                     continue
                 if file_differs(full_local_path, cache[filename]):
                     handling_result = handle_local_change(
                         full_local_path, relative_remote_path,
-                        config['conflict_handling'])
+                        config['conflict-handling'])
                     if (handling_result == 'keep'):
                         cache[filename] = remote_digest
                         continue
@@ -177,37 +185,38 @@ def sync_tree(connection, source, destination, rel_path, excludes, cache, config
             del cache[filename]
             rel_path = os.path.join(rel_path, filename)
             full_path = os.path.join(destination, rel_path)
-            logger.debug('%s has been deleted on remote' % rel_path)
-            conflict_handling = config['conflict_handling']['remote-deleted']
-            if conflict_handling == 'ask':
-                question = ("%s has been deleted on remote. "
-                            "Do you want to delete your local copy?")
-                answer = ask_question(question % rel_path)
-                if answer is False:
+            logger.debug('%s: %s has been deleted on remote' % (repo_name, rel_path))
+            if os.path.exists(full_path):
+                conflict_handling = config['conflict-handling']['remote-deleted']
+                if conflict_handling == 'ask':
+                    question = ("%s has been deleted on remote. "
+                                "Do you want to delete your local copy?")
+                    answer = ask_question(question % os.path.join(repo_name, rel_path))
+                    if answer is False:
+                        return
+                elif conflict_handling != 'delete':
                     return
-            elif conflict_handling != 'delete':
-                return
 
-            logger.info('%s will be removed' % rel_path)
-            remove_tree(full_path)
+                logger.info('%s: %s will be removed' % (repo_name, rel_path))
+                remove_tree(full_path)
 
 
 def sync(config):
-    connection = smb_login(config['login']['username'])
+    connection = smb_login(config)
     repositories = config['sync']['repositories']
     if not repositories:
         logger.info("No repositories in config")
     for name, repository in repositories.items():
-        source = repository['remote_dir']
-        destination = repository['local_dir']
+        source = repository['remote-dir']
+        destination = repository['local-dir']
         if not os.path.exists(destination):
             os.makedirs(destination)
         logger.info('Starting sync: %s -> %s' % (source, destination))
-        excludes = config['sync']['global_exclude'] + repository['exclude']
+        excludes = config['sync']['global-exclude'] + repository['exclude']
         logger.info('The following patterns will be excluded: %s' % (excludes))
         cache_file = '%s/.%s.json' % (destination, name)
         cache = load_cache(cache_file)
-        sync_tree(connection, source, destination, '', excludes, cache, config['sync'])
+        sync_tree(connection, name, source, destination, '', excludes, cache, config['sync'])
         dump_cache(cache_file, cache)
         logger.info("Sync of %s completed" % name)
 
@@ -215,5 +224,5 @@ def sync(config):
 
 
 if __name__ == "__main__":
-    config = connect_config.load_config()
+    config = configuration.load_config()
     sync(config)
