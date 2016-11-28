@@ -114,9 +114,9 @@ def create_default_config(config_path):
 #Open file path and create parent directories if necessary as open() doesn't create them on Windows
 def safe_open_w(path):
     try:
-        os.makedirs(path)
+        os.makedirs(os.path.dirname(path))
     except OSError as e:
-        if e.errno == errno.EEXIST and os.path.isdir(path):
+        if e.errno == errno.EEXIST and os.path.isdir(os.path.dirname(path)):
             pass
         else: raise
     
