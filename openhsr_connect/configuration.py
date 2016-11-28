@@ -19,6 +19,7 @@ sync:
   global-exclude:
     - .DS_Store
     - Thumbs.db
+    - desktop.ini
 
   conflict-handling:
     local-changes: ask # ask | keep | overwrite | makeCopy
