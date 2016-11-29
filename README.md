@@ -79,7 +79,7 @@ Download link [here](https://git-scm.com/download/win)
 Open admin command prompt
 ```
 $git clone https://github.com/openhsr/connect.git
-cd connect
+$cd connect
 ```
 
 4. Build & install
