@@ -7,7 +7,9 @@ Besser als der HSR Mapper ;)
 ##How to install
 ###Ubuntu/Debian
 1. Install dependencies
-```$sudo apt-get install git python3-setuptools gcc python3-dev libffi-dev libssl-dev python3-pip -y```
+```
+$sudo apt-get install git python3-setuptools gcc python3-dev libffi-dev libssl-dev python3-pip -y
+```
 
 2. Clone repo
 ```
@@ -18,6 +20,7 @@ $cd connect
 3. Build & install
 ```
 $sudo  python3 ./setup.py install
+```
 
 4. Set up sync settings
 ```
