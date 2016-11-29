@@ -13,8 +13,7 @@ $sudo apt-get install git python3-setuptools gcc python3-dev libffi-dev libssl-d
 2. Clone repo
 ```
 $git clone https://github.com/openhsr/connect.git
-$cd connect
-```
+$cd connect```
 3. Build & install
 ```
 $sudo  python3 ./setup.py install
