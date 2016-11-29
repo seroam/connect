@@ -23,7 +23,7 @@ $sudo  python3 ./setup.py install
 ```
 $openhsr-connect edit
 ```
-Enter HSR information, modify config file for your classes (See example [here](https://github.com/seroam/connect/blob/master/docs/config.example.yaml))
+Enter HSR information, modify config file for your classes (See example [here](https://github.com/openhsr/connect/blob/master/docs/config.example.yaml))
 
 5. Profit!
 ```
@@ -59,7 +59,7 @@ For x64 Python this path is ```C:\Program Files\Python35\Scripts``` by default. 
 ```
 $openhsr-connect edit
 ```
-Enter HSR information, modify config file for your classes (See example [here](https://github.com/seroam/connect/blob/master/docs/config.example.yaml))
+Enter HSR information, modify config file for your classes (See example [here](https://github.com/openhsr/connect/blob/master/docs/config.example.yaml))
 
 7. Profit!
 ```
