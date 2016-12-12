@@ -31,7 +31,7 @@ Besser als der HSR Mapper ;)
     $ openhsr-connect edit
     ```
 	
-Enter HSR information, modify config file for your classes (See example [here](https://github.com/openhsr/connect/blob/master/docs/config.example.yaml))
+Enter HSR information, modify config file for your classes ([See example configuration](https://github.com/openhsr/connect/blob/master/docs/config.example.yaml))
 
 5. Profit!
 
@@ -43,7 +43,7 @@ Sync the specified directories with the script server.
 
 
 ###macOS
-1. Install Homebrew
+1. Install [Homebrew](http://brew.sh/)
 
     ```
     $/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -77,7 +77,7 @@ Sync the specified directories with the script server.
     $ openhsr-connect edit
     ```
 	
-    Enter HSR information, modify config file for your classes (See example [here](https://github.com/openhsr/connect/blob/master/docs/config.example.yaml))
+    Enter HSR information, modify config file for your classes ([See example configuration](https://github.com/openhsr/connect/blob/master/docs/config.example.yaml))
     If you get a decoding error and the application crashes after entering your email address, make sure you have your encoding set to 'Western (ISO Latin 1)' and not UTF-8. You can change this setting under Terminal->Preferences->Profiles->Advanced->Text encoding.
 
 6. Profit!
@@ -89,12 +89,12 @@ Sync the specified directories with the script server.
     Sync the specified directories with the script server.
 
 
-###Windows
-    1. Download Python 3.x (Latest is 3.5.2 as of creation of this guide. Download website: [Link](https://www.python.org/downloads/release/python-352/), Installer: [click me hard](https://www.python.org/ftp/python/3.5.2/python-3.5.2-amd64.exe))
+###Windows (Not officially supported)
+    1. Download Python 3.x (Latest is 3.5.2 as of creation of this guide. [Download website](https://www.python.org/downloads/release/python-352/), [Installer](https://www.python.org/ftp/python/3.5.2/python-3.5.2-amd64.exe))
     Install and make sure to install the py launcher as well (this setting should automatically be set in the advanced installation options).
 
     2. Install git
-    Download link [here](https://git-scm.com/download/win)
+    [Download link](https://git-scm.com/download/win)
 
 3. Clone repo
     Open admin command prompt
@@ -131,7 +131,7 @@ Sync the specified directories with the script server.
 	
     Sync the specified directories with the script server.
 
-###Bash on Ubuntu on Windows
+###Bash on Ubuntu on Windows (Not officially supported)
 It's probably easier to just use it in Windows if you're on Windows but here's how you'd get it to work on BoUoW:
 
 Follow steps 1-3 from the Ubuntu/Debian section, then:
