@@ -90,10 +90,10 @@ Besser als der HSR Mapper ;)
 
 
 ###Windows (Not officially supported)
-    1. Download Python 3.x (Latest is 3.5.2 as of creation of this guide. [Download website](https://www.python.org/downloads/release/python-352/), [Installer](https://www.python.org/ftp/python/3.5.2/python-3.5.2-amd64.exe))
+1. Download Python 3.x (Latest is 3.5.2 as of creation of this guide. [Download website](https://www.python.org/downloads/release/python-352/), [Installer](https://www.python.org/ftp/python/3.5.2/python-3.5.2-amd64.exe))
     Install and make sure to install the py launcher as well (this setting should automatically be set in the advanced installation options).
 
-    2. Install git
+2. Install git
     [Download link](https://git-scm.com/download/win)
 
 3. Clone repo
