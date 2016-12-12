@@ -225,5 +225,5 @@ $ cd keyrings.alt-1.1.1
 $ sudo python3 ./setup.py install
 ```
 
-Continue with step 4 from the Ubuntu/Debian section.
+Continue with step 4 from the Linux-Distributionen section.
 
