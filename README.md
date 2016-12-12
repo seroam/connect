@@ -31,7 +31,7 @@ Besser als der HSR Mapper ;)
     $ openhsr-connect edit
     ```
 	
-Enter HSR information, modify config file for your classes ([See example configuration](https://github.com/openhsr/connect/blob/master/docs/config.example.yaml))
+    Enter HSR information, modify config file for your classes ([See example configuration](https://github.com/openhsr/connect/blob/master/docs/config.example.yaml))
 
 5. Profit!
 
@@ -39,7 +39,7 @@ Enter HSR information, modify config file for your classes ([See example configu
     $ openhsr-connect sync
     ```
 	
-Sync the specified directories with the script server.
+    Sync the specified directories with the script server.
 
 
 ###macOS
@@ -113,7 +113,7 @@ Sync the specified directories with the script server.
 	
 
 5. Add Python Scripts folder to $PATH
-    For x64 Python this path is ```C:\Program Files\Python35\Scripts``` by default. If you're not sure how to add this to Path, check this [link](http://www.computerhope.com/issues/ch000549.htm)
+    For x64 Python this path is ```C:\Program Files\Python35\Scripts``` by default. If you're not sure how to add this to Path, check [this link](http://www.computerhope.com/issues/ch000549.htm)
 
 6. Set up sync settings
 
@@ -138,12 +138,12 @@ Follow steps 1-3 from the Ubuntu/Debian section, then:
 
 Download & install keyrings.alt
 
-    ```
-    $ cd
-    $ curl https://pypi.python.org/packages/27/d0/9207bf58de11735fe2239deaecb9eae1084e2887077a700ac8aa27bd8159/keyrings.alt-1.1.1.tar.gz | tar xz
-    $ cd keyrings.alt-1.1.1
-    $ sudo python3 ./setup.py install
-    ```
+```
+$ cd
+$ curl https://pypi.python.org/packages/27/d0/9207bf58de11735fe2239deaecb9eae1084e2887077a700ac8aa27bd8159/keyrings.alt-1.1.1.tar.gz | tar xz
+$ cd keyrings.alt-1.1.1
+$ sudo python3 ./setup.py install
+```
 
 Continue with step 4 from the Ubuntu/Debian section.
 
