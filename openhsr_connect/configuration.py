@@ -111,15 +111,18 @@ def create_default_config(config_path):
         f.write(config)
 
 
-#Open file path and create parent directories if necessary as open() doesn't create them on Windows
 def safe_open_w(path):
+	"""
+	Open file path and create parent directories if necessary as open() doesn't create them on Windows
+	"""
     try:
         os.makedirs(os.path.dirname(path))
     except OSError as e:
         if e.errno == errno.EEXIST and os.path.isdir(os.path.dirname(path)):
             pass
-        else: raise
-    
+        else: 
+		    raise
+
     return open(path, 'w')
 	
 
@@ -133,7 +136,7 @@ def load_config(raise_if_incomplete=False):
     if not os.path.exists(config_path):
         if raise_if_incomplete:
             raise ConfigurationException('Configuration does not yet exist!')
-	    
+
         create_default_config(config_path)
 
     config = None
